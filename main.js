@@ -4,10 +4,10 @@ const body = doc.body;
 
 let nav, sidebar, wrapper;
 
-function buildApp(name, icon = false, navOpt = true, sidebarOpt = false, addWrapper = true, loadFonts = true) {
-    if (name) {
-        doc.title = name;
-    }
+function buildApp(name, icon = false, navOpt = true, sidebarOpt = false, addWrapper = true, loadFonts = true, materialDesign = true) {
+    if (materialDesign) addMaterialDesign();
+
+    if (name) doc.title = name;
 
     if (icon) {
         const link = doc.createElement('link');
@@ -55,6 +55,50 @@ function addStylesheet(href = 'styles.css') {
     head.appendChild(link);
 }
 
+class Color {
+    constructor(color = 'purple', customColors = {}) {
+        this.defaultColors = {
+            red: '#ffddddff',
+            green: '#e2ffddff',
+            blue: '#ddeaffff',
+            purple: '#eaddffff',
+            black: '#000000',
+            white: '#f7f7ffff',
+            yellow: '#fff7ddff',
+            orange: '#ffe7ddff'
+        };
+        this.colors = { ...this.defaultColors, ...customColors };
+        this.setColor(color);
+    }
+
+    toHex(color) {
+        if (color.startsWith('#')) return color;
+        return this.colors[color.toLowerCase()] || this.colors['purple'];
+    }
+
+    setFgColor(bgColor) {
+        const hex = bgColor.replace('#', '').slice(0, 6);
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        return brightness > 128 ? '#000000' : '#ffffff';
+    }
+
+    getFgColor(bgColor) {
+        return this.setFgColor(bgColor);
+    }
+
+    setColor(newColor) {
+        this.color = this.toHex(newColor);
+        this.fgcolor = this.getFgColor(this.color);
+    }
+
+    addColor(name, hex) {
+        this.colors[name.toLowerCase()] = hex;
+    }
+}
+
 class Logo {
     constructor(selector = '.logo', parent, name, icon) {
         this.elem = document.querySelector(selector);
@@ -87,6 +131,18 @@ class Btn {
         parent.appendChild(btn);
 
         this.elem = btn;
+    }
+    setColor(color) {
+        const c1 = new Color(color);
+        color = c1.color;
+        this.elem.style.backgroundColor = color;
+        this.elem.style.color = c1.fgcolor;
+    }
+    onClick(callback) {
+        this.elem.addEventListener('click', callback);
+    }
+    on(event, callback) {
+        this.elem.addEventListener(event, callback);
     }
 }
 

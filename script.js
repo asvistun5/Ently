@@ -1,4 +1,3 @@
-addMaterialDesign();
 buildApp('Ently', 'icon.png', true, true, true, true);
 
 const btn1 = new Btn(wrapper, 'Click Me 1');
