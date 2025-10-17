@@ -4,43 +4,50 @@ const body = doc.body;
 
 let nav, sidebar, wrapper;
 
-function buildApp(name, icon = false, navOpt = true, sidebarOpt = false, addWrapper = true, loadFonts = true, materialDesign = true) {
+function buildApp(name, icon = false, options = {}) {
+    const {
+        navOpt = true,
+        sidebarOpt = false,
+        wrapperOpt = true,
+        loadFonts = true,
+        materialDesign = true,
+        mode = 'system'
+    } = options;
+
     if (materialDesign) addMaterialDesign();
+    if (mode === 'system') {
+        const darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        body.classList.toggle('dark', darkMode);
+    } else if (mode === 'dark' || mode === 'light') {
+        body.classList.toggle(mode);
+    }
 
     if (name) doc.title = name;
 
     if (icon) {
         const link = doc.createElement('link');
         link.rel = 'icon';
-        link.href = icon || 'icon.png';
+        link.href = icon;
         head.appendChild(link);
     } else {
         console.warn('Icon not found, please add an icon.png file to the root directory.');
     }
+
     if (loadFonts) {
         const productFont = doc.createElement('link');
         productFont.rel = 'stylesheet';
         productFont.href = 'https://fonts.googleapis.com/css2?family=Product+Sans:wght@300;400;700&display=swap';
         head.appendChild(productFont);
+
         const interFont = doc.createElement('link');
         interFont.rel = 'stylesheet';
         interFont.href = 'https://fonts.googleapis.com/css2?family=Product+Sans:wght@300;400;700&display=swap';
         head.appendChild(interFont);
     }
 
-    if (navOpt) {
-        nav = new Navbar('.nav', name, icon);
-    }
-
-    if (sidebarOpt) {
-        sidebar = new Sidebar('.sidebar');
-    }
-
-    if (addWrapper) {
-        wrapper = doc.createElement('main');
-        wrapper.classList.add('wrapper');
-        body.appendChild(wrapper); 
-    }
+    if (navOpt) nav = new Navbar('.nav', name, icon).elem;
+    if (sidebarOpt) sidebar = new Sidebar('.sidebar').elem;
+    if (wrapperOpt) wrapper = new Wrapper('.wrapper').elem;
 }
 
 
@@ -55,11 +62,17 @@ function addStylesheet(href = 'styles.css') {
     head.appendChild(link);
 }
 
+function add(tag, parent) {
+    const elem = doc.createElement(tag);
+    if (parent) parent.appendChild(elem);
+    return elem;
+}
+
 class Color {
     constructor(color = 'purple', customColors = {}) {
         this.defaultColors = {
             red: '#ffddddff',
-            green: '#e2ffddff',
+            green: '#d0ffc8ff',
             blue: '#ddeaffff',
             purple: '#eaddffff',
             black: '#000000',
@@ -99,6 +112,26 @@ class Color {
     }
 }
 
+class Theme {
+    constructor(color = '', customColors = {}) {
+        this.defaultColors = {
+            red: '#353535',
+            green: '#c8ffbeff',
+            blue: '#ddeaffff',
+            purple: '#eaddffff',
+            black: '#000000',
+            white: '#f7f7ffff',
+            yellow: '#fff7ddff',
+            orange: '#ffe7ddff'
+        };
+        this.colors = { ...this.defaultColors, ...customColors };
+        this.setColor(color);
+    }
+    set(mode) {
+        this.mode = mode;
+    }
+}
+
 class Logo {
     constructor(selector = '.logo', parent, name, icon) {
         this.elem = document.querySelector(selector);
@@ -119,7 +152,7 @@ class Logo {
 }
 
 class Btn {
-    constructor(parent, name, icon, selector = '.filled') {
+    constructor(icon, name, parent, selector = '.filled') {
         const btn = doc.createElement('button');
         btn.classList.add(selector.replace('.', ''));
 
@@ -147,7 +180,7 @@ class Btn {
 }
 
 class Link {
-    constructor(parent, name, href = '#', selector = '.link') {
+    constructor(icon, name, href = '#', parent, selector = '.link') {
         const link = document.createElement('a');
         link.classList.add(selector.replace('.', ''));
         link.href = href;
@@ -172,6 +205,7 @@ class Navbar {
             const logo = new Logo('.logo', navbar, name, icon);
             
             body.appendChild(navbar);
+            this.elem = navbar;
         }
     }
 
@@ -195,6 +229,7 @@ class Sidebar {
             const sidebar = doc.createElement('div');
             sidebar.classList.add(selector.replace('.', ''));
             body.appendChild(sidebar);
+            this.elem = sidebar;
         }
     }
 
@@ -208,5 +243,18 @@ class Sidebar {
 
     toggle() {
         this.elem.classList.toggle('shown');
+    }
+}
+
+class Wrapper {
+    constructor(selector = '.wrapper') {
+        this.elem = document.querySelector(selector);
+
+        if (!this.elem) {
+            wrapper = doc.createElement('main');
+            wrapper.classList.add('wrapper');
+            body.appendChild(wrapper);
+            this.elem = wrapper;
+        }
     }
 }
