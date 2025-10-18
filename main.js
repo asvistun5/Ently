@@ -112,26 +112,6 @@ class Color {
     }
 }
 
-class Theme {
-    constructor(color = '', customColors = {}) {
-        this.defaultColors = {
-            red: '#353535',
-            green: '#c8ffbeff',
-            blue: '#ddeaffff',
-            purple: '#eaddffff',
-            black: '#000000',
-            white: '#f7f7ffff',
-            yellow: '#fff7ddff',
-            orange: '#ffe7ddff'
-        };
-        this.colors = { ...this.defaultColors, ...customColors };
-        this.setColor(color);
-    }
-    set(mode) {
-        this.mode = mode;
-    }
-}
-
 class Logo {
     constructor(selector = '.logo', parent, name, icon) {
         this.elem = document.querySelector(selector);
