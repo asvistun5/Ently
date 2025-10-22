@@ -4,7 +4,13 @@ buildApp('Ently', 'icon.png', {
     wrapperOpt: true,
     loadFonts: true,
     materialDesign: true
-});
+    },
+    [
+        { name: 'Home', href: '/' },
+        { name: 'About', href: '/about' },
+        { name: 'Contact', href: '/contact' }
+    ]
+);
 
 add('h2', wrapper).textContent = 'Welcome to Ently lib.';
 add('p', wrapper).textContent = 'You can customize this application by modifying the main.js file. Enjoy building your app!';

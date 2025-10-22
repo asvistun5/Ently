@@ -4,7 +4,7 @@ const body = doc.body;
 
 let nav, sidebar, wrapper;
 
-function buildApp(name, icon = false, options = {}) {
+function buildApp(name, icon = false, logo = null, options = {}, navs = []) {
     const {
         navOpt = true,
         sidebarOpt = false,
@@ -41,13 +41,23 @@ function buildApp(name, icon = false, options = {}) {
 
         const interFont = doc.createElement('link');
         interFont.rel = 'stylesheet';
-        interFont.href = 'https://fonts.googleapis.com/css2?family=Product+Sans:wght@300;400;700&display=swap';
+        interFont.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap';
         head.appendChild(interFont);
     }
 
-    if (navOpt) nav = new Navbar('.nav', name, icon).elem;
+    if (navOpt) nav = new Navbar('.nav', name, icon, navs).elem;
     if (sidebarOpt) sidebar = new Sidebar('.sidebar').elem;
     if (wrapperOpt) wrapper = new Wrapper('.wrapper').elem;
+
+    const spinner = document.querySelector('.spinner');
+    if (spinner) { 
+        setTimeout(() => {
+            spinner.classList.add('hide');
+        }, 400);
+        setTimeout(() => {
+            spinner.remove();
+        }, 600);
+    }
 }
 
 
@@ -113,16 +123,19 @@ class Color {
 }
 
 class Logo {
-    constructor(selector = '.logo', parent, name, icon) {
+    constructor(selector = '.logo', parent, name, icon, usedLogo = null) {
         this.elem = document.querySelector(selector);
         if (!this.elem) {
             const logo = doc.createElement('div');
+            const logoIcon = doc.createElement('img');
             logo.classList.add(selector.replace('.', ''));
 
-            const logoIcon = doc.createElement('img');
-            logoIcon.src = icon || 'icon.png';
-
-            logo.textContent = name || 'App';
+            if (usedLogo) {
+                logoIcon.src = usedLogo || 'logo.png';
+            } else if (icon) {
+                logoIcon.src = icon || 'icon.png';
+                logo.textContent = name || 'App';
+            }
 
             logo.prepend(logoIcon);
             
@@ -165,10 +178,8 @@ class Link {
         link.classList.add(selector.replace('.', ''));
         link.href = href;
 
-        const linkText = document.createElement('span');
-        linkText.textContent = name || 'Link';
+        link.textContent = name || 'Link';
 
-        link.appendChild(linkText);
         parent.appendChild(link);
 
         this.elem = link;
@@ -176,30 +187,27 @@ class Link {
 }
 
 class Navbar {
-    constructor(selector = '.nav', name, icon, options = {}) {
+    constructor(selector = '.nav', name, icon, navs = []) {
         this.elem = document.querySelector(selector);
         if (!this.elem) {
             const navbar = doc.createElement('nav');
             navbar.classList.add(selector.replace('.', ''));
 
             const logo = new Logo('.logo', navbar, name, icon);
+
+            navs.forEach(navItem => {
+                const link = new Link(null, navItem.name, navItem.href, navbar, '.nav-link');
+                console.log(link);
+            });
             
             body.appendChild(navbar);
             this.elem = navbar;
         }
     }
 
-    show() {
-        this.elem.classList.add('shown');
-    }
-
-    hide() {
-        this.elem.classList.remove('shown');
-    }
-
-    toggle() {
-        this.elem.classList.toggle('shown');
-    }
+    show() { this.elem.classList.add('shown'); }
+    hide() { this.elem.classList.remove('shown'); }
+    toggle() { this.elem.classList.toggle('shown'); }
 }
 
 class Sidebar {

@@ -68,12 +68,31 @@ button.filled:hover {
 }
 
 main.wrapper {
-    font-family: 'Inter', Arial, Helvetica, sans-serif;
     width: calc(100% - 40px);
     height: calc(100vh - 60px);
     padding: 0 20px;
     overflow-x: hidden;
     overflow-y: scroll;
+}
+
+main.wrapper h1, main.wrapper h2, main.wrapper h3, main.wrapper h4, main.wrapper h5, main.wrapper h6 {
+    font-family: 'Inter', Arial, Helvetica, sans-serif;
+}
+
+main.wrapper h1 {
+    font-size: 36px;
+}
+
+main.wrapper h2 {
+    font-size: 32px;
+}
+
+main.wrapper h3 {
+    font-size: 28px;
+}
+
+main.wrapper h4 {
+    font-size: 24px;
 }
 
 div.popup {
@@ -87,6 +106,42 @@ div.popup {
     align-items: center;
     justify-content: center;
     z-index: 1000;
+}
+
+.spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    visibility: visible;
+    background-color: white;
+    width: 100%;
+    height: 100vh;
+    transition: all 0.2s;
+    z-index: 1;
+}
+
+.spinner.hide {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.spinner > div {
+    width: 28px;
+    height: 28px;
+    border: 5px solid white;
+    border-top: 5px solid #6d12ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 100px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 ::-webkit-scrollbar {
