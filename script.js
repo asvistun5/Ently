@@ -12,9 +12,9 @@ buildApp('Ently', 'icon.png', {
     ]
 );
 
-add('h2', wrapper).textContent = 'Welcome to Ently lib.';
-add('p', wrapper).textContent = 'You can customize this application by modifying the main.js file. Enjoy building your app!';
-add('br', wrapper);
+element('h2', wrapper).textContent = 'Welcome to Ently lib.';
+element('p', wrapper).textContent = 'You can customize this application by modifying the main.js file. Enjoy building your app!';
+element('br', wrapper);
 
 const btn1 = new Btn('icon.png', 'Click Me', wrapper);
 btn1.onClick(() => {

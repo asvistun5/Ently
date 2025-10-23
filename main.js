@@ -72,7 +72,7 @@ function addStylesheet(href = 'styles.css') {
     head.appendChild(link);
 }
 
-function add(tag, parent) {
+function element(tag, parent) {
     const elem = doc.createElement(tag);
     if (parent) parent.appendChild(elem);
     return elem;
