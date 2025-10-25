@@ -5,14 +5,7 @@ const body = doc.body;
 let nav, sidebar, wrapper;
 
 function buildApp(name, icon = false, logo = null, options = {}, navs = []) {
-    const {
-        navOpt = true,
-        sidebarOpt = false,
-        wrapperOpt = true,
-        loadFonts = true,
-        materialDesign = true,
-        mode = 'system'
-    } = options;
+    const { navOpt = true, sidebarOpt = false, wrapperOpt = true, loadFonts = true, materialDesign = true, mode = 'system' } = options;
 
     if (materialDesign) addMaterialDesign();
     if (mode === 'system') {
@@ -33,19 +26,12 @@ function buildApp(name, icon = false, logo = null, options = {}, navs = []) {
         console.warn('Icon not found, please add an icon.png file to the root directory.');
     }
 
-    if (loadFonts) {
-        const productFont = doc.createElement('link');
-        productFont.rel = 'stylesheet';
-        productFont.href = 'https://fonts.googleapis.com/css2?family=Product+Sans:wght@300;400;700&display=swap';
-        head.appendChild(productFont);
+    if (loadFonts)
+        ['Product+Sans:wght@300;400;700', 'Inter:wght@100;200;300;400;500;600;700;800;900']
+        .forEach(f => head.appendChild(Object.assign(doc.createElement('link'), { rel:'stylesheet', href:`https://fonts.googleapis.com/css2?family=${f}&display=swap` })));
 
-        const interFont = doc.createElement('link');
-        interFont.rel = 'stylesheet';
-        interFont.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap';
-        head.appendChild(interFont);
-    }
-
-    if (navOpt) nav = new Navbar('.nav', name, icon, navs).elem;
+        
+    if (navOpt) nav = new Navbar(name, icon, navs, '.nav').elem;
     if (sidebarOpt) sidebar = new Sidebar('.sidebar').elem;
     if (wrapperOpt) wrapper = new Wrapper('.wrapper').elem;
 
@@ -186,25 +172,40 @@ class Link {
     }
 }
 
-class Navbar {
-    constructor(selector = '.nav', name, icon, navs = []) {
-        this.elem = document.querySelector(selector);
-        if (!this.elem) {
-            const navbar = doc.createElement('nav');
-            navbar.classList.add(selector.replace('.', ''));
-
-            const logo = new Logo('.logo', navbar, name, icon);
-
-            navs.forEach(navItem => {
-                const link = new Link(null, navItem.name, navItem.href, navbar, '.nav-link');
-                console.log(link);
-            });
-            
-            body.appendChild(navbar);
-            this.elem = navbar;
-        }
+class Card {
+    constructor(parent, opts = {}) {
+        const image = opts.img || null;
+        const selector = opts.selector || '.card';
+        const btns = opts.btns || [];
+        const card = doc.createElement('div');
+        if (image) element('img', card).src = image;
+        if (typeof selector !== 'string') throw new Error(`${selector} Selector must be a string.`);
+        card.classList.add(selector.replace('.', ''));
+        parent.appendChild(card);
+        this.elem = card;
     }
+    add(content) {
+        (Array.isArray(content) ? content : [content]).forEach(i => this.elem.appendChild(i));
+    }
+    onBtn(callback) {
+        //pass
+    }
+    on(event, callback) {
+        this.elem.addEventListener(event, callback);
+    }
+}
 
+class Navbar {
+    constructor(name, icon, links = {}, selector = '.nav'){
+        const nav = doc.createElement('nav');
+        nav.classList.add(selector.replace('.', ''));
+        new Logo('.logo', nav, name, icon);
+        Object.entries(links).forEach(([label, href]) => {
+            new Link(null, label, href, nav, '.nav-link');
+        });
+        body.appendChild(nav);
+        this.elem = nav;
+    }
     show() { this.elem.classList.add('shown'); }
     hide() { this.elem.classList.remove('shown'); }
     toggle() { this.elem.classList.toggle('shown'); }

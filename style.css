@@ -68,11 +68,14 @@ button.filled:hover {
 }
 
 main.wrapper {
+    display: flex;
+    flex-direction: column;
     width: calc(100% - 40px);
     height: calc(100vh - 60px);
     padding: 0 20px;
     overflow-x: hidden;
     overflow-y: scroll;
+    gap: 12px;
 }
 
 main.wrapper h1, main.wrapper h2, main.wrapper h3, main.wrapper h4, main.wrapper h5, main.wrapper h6 {
@@ -93,6 +96,26 @@ main.wrapper h3 {
 
 main.wrapper h4 {
     font-size: 24px;
+}
+
+div.card {
+    display: flex;
+    flex-direction: column;
+    background-color: #f6f0ff;
+    border-radius: 28px;
+    padding: 14px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    gap: 10px;
+}
+
+div.card > img {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 27px;
+}
+
+div.card > button {
+    background-color: #2b0c5b;
+    color: white;
 }
 
 div.popup {

@@ -1,20 +1,27 @@
-buildApp('Ently', 'icon.png', {    
-    navOpt: true,
-    sidebarOpt: true,
-    wrapperOpt: true,
-    loadFonts: true,
-    materialDesign: true
-    },
-    [
-        { name: 'Home', href: '/' },
-        { name: 'About', href: '/about' },
-        { name: 'Contact', href: '/contact' }
-    ]
-);
+let settings = { 
+    navOpt: true, 
+    sidebarOpt: true, 
+    wrapperOpt: true 
+};
 
-element('h2', wrapper).textContent = 'Welcome to Ently lib.';
-element('p', wrapper).textContent = 'You can customize this application by modifying the main.js file. Enjoy building your app!';
-element('br', wrapper);
+let navs = {
+    Home: '/home',
+    About: '/about',
+    Contact: '/contact'
+};
+
+
+buildApp('Ently', 'static/img/icon.svg', settings, navs);
+
+
+const welcome = element('h2', wrapper)
+welcome.textContent = 'Welcome to Ently!';
+
+const desc = element('p', wrapper)
+desc.textContent = 'This is a sample application built using the Ently framework. Enjoy exploring the features and components available to you!';
+
+const card1 = new Card(wrapper);
+card1.add([welcome, desc]);
 
 const btn1 = new Btn('icon.png', 'Click Me', wrapper);
 btn1.onClick(() => {
