@@ -36,6 +36,12 @@ nav.nav {
     gap: 20px;
 }
 
+div#navs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .logo {
     display: flex;
     align-items: center;
@@ -50,6 +56,21 @@ nav.nav {
 .logo img {
     width: 46px;
     height: 46px;
+}
+
+.sidebar {
+    opacity: 0;
+    visibility: hidden;
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: calc(100% - 60px);
+    transition: all 0.3s;
+}
+
+.sidebar.active {
+    opacity: 1;
+    visibility: visible;
 }
 
 button.filled {
