@@ -138,12 +138,18 @@ class Logo {
 }
 
 class Btn {
-    constructor(icon, name, parent, selector = '.filled') {
+    constructor(text, parent, options = { type: 'filled' }) {
+        const { type, selector } = options;
         const btn = doc.createElement('button');
-        btn.classList.add(selector.replace('.', ''));
+        if (type === 'filled') {
+            btn.classList.add('filled');
+        } else if (type === 'outlined') {
+            btn.classList.add('outlined');
+        }
+        if (selector) btn.classList.add(selector.replace('.', ''));
 
         const btnText = doc.createElement('span');
-        btnText.textContent = name || 'Button';
+        btnText.textContent = text || 'Button';
 
         btn.appendChild(btnText);
 
@@ -161,6 +167,14 @@ class Btn {
 
     setText(text) {
         this.elem.textContent = text;
+    }
+
+    setStyle(stylesheet) {
+        this.elem.style = stylesheet;
+    }
+
+    style() {
+        return this.elem.style;
     }
 
     onClick(callback) {

@@ -24,6 +24,7 @@ a {
 button {
     border: none;
     outline: none;
+    transition: all 0.3s;
 }
 
 nav.nav {
@@ -73,19 +74,32 @@ div#navs {
     visibility: visible;
 }
 
-button.filled {
+button.filled, button.outlined {
     font-family: 'Inter';
     font-size: 15px;
     font-weight: 500;
+    padding: 12px 20px;
+}
+
+button.filled {
     color: #21005d;
     background-color: #eaddff;
-    border-radius: 100px;
-    padding: 12px 20px;
-    transition: all 0.3s;
+    border-radius: 40px;
 }
 
 button.filled:hover {
     background-color: #d5c0f6;
+}
+
+button.outlined {
+    color: #21005d;
+    background-color: transparent;
+    border: 2px solid #21005d;
+    border-radius: 40px;
+}
+
+button.outlined:hover {
+    background-color: rgba(0, 0, 255, 0.04);
 }
 
 main.wrapper {

@@ -11,7 +11,7 @@ const app = buildApp({
         abt: { href: '/abt' }
     },
     content: {
-        btn: new Btn('user', 'Login')
+        btn: new Btn('Login', null, { type: 'outlined' })
     },
     callback: main
 });
