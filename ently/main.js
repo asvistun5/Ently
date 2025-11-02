@@ -233,6 +233,93 @@ class Card {
     }
 }
 
+class Switch {
+    constructor(text, parent, options = { type: 'switch', pos: 'right' }) {
+        const { type, pos, selector } = options;
+
+        const checkboxWrapper = document.createElement('label');
+        const checkbox = document.createElement('input');
+
+        if (type === 'switch') checkbox.type = 'text';
+        else if (type === 'box') checkbox.type = 'checkbox';
+        else if (type === 'radio') checkbox.type = 'radio';
+
+        const checkboxText = document.createElement('span');
+        checkboxText.textContent = text || 'Checkbox';
+
+        if (pos === 'left') { checkboxWrapper.appendChild(checkbox); checkboxWrapper.appendChild(checkboxText); }
+        else { checkboxWrapper.appendChild(checkboxText); checkboxWrapper.appendChild(checkbox); }
+
+
+        if (parent) parent.appendChild(checkboxWrapper);
+
+        this.elem = checkboxWrapper;
+        this.checkbox = checkbox;
+    }
+
+    setChecked(checked) {
+        this.checkbox.checked = checked;
+    }
+
+    setText(text) {
+        this.elem.querySelector('span').textContent = text;
+    }
+
+    setStyle(stylesheet) {
+        this.elem.style = stylesheet;
+    }
+
+    onChange(callback) {
+        this.checkbox.addEventListener('change', callback);
+    }
+}
+
+class Input {
+    constructor(placeholder, parent, options = { type: 'text' }) {
+        const { type } = options;
+        const wrapper = document.createElement('label');
+        const input = document.createElement('input');
+        input.type = type;
+        input.placeholder = placeholder || '';
+
+        const span = document.createElement('span');
+        span.textContent = placeholder || '';
+
+        wrapper.appendChild(span);
+        wrapper.appendChild(input);
+
+        if (parent) parent.appendChild(wrapper);
+
+        this.elem = wrapper;
+        this.input = input;
+    }
+
+    setValue(value) {
+        this.input.value = value;
+    }
+
+    value() {
+        return this.input.value;
+    }
+
+    setPlaceholder(text) {
+        this.input.placeholder = text;
+        this.elem.querySelector('span').textContent = text;
+    }
+
+    setStyle(stylesheet) {
+        this.input.style = stylesheet;
+    }
+
+    onInput(callback) {
+        this.input.addEventListener('input', callback);
+    }
+
+    on(event, callback) {
+        this.input.addEventListener(event, callback);
+    }
+}
+
 class Navbar {
     constructor(name, icon, links = {}, selector = '.nav') {
         const nav = doc.createElement('nav');

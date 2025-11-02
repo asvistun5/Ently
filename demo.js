@@ -11,12 +11,16 @@ const app = buildApp({
         abt: { href: '/abt' }
     },
     content: {
-        btn: new Btn('Login', null, { type: 'outlined' })
+        inp: new Input('Credit card', null),
+        chk: new Switch('Use cookies', null, { type: 'radio' }),
+        btn: new Btn('Login', null, { type: 'outlined' }),
     },
     callback: main
 });
 
 function main(app) {
     const { content } = app;
-    content.btn.onClick(() => { content.btn.setColor('green'); content.btn.setText('Clicked'); });
+    const con = content;
+
+    con.btn.onClick(() => { con.btn.setColor('green'); con.btn.setText('Clicked'); });
 }
