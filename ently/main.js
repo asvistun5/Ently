@@ -164,26 +164,6 @@ class Btn {
         this.elem.style.backgroundColor = color;
         this.elem.style.color = c1.fgcolor;
     }
-
-    setText(text) {
-        this.elem.textContent = text;
-    }
-
-    setStyle(stylesheet) {
-        this.elem.style = stylesheet;
-    }
-
-    style() {
-        return this.elem.style;
-    }
-
-    onClick(callback) {
-        this.elem.addEventListener('click', callback);
-    }
-
-    on(event, callback) {
-        this.elem.addEventListener(event, callback);
-    }
 }
 
 class Link {
@@ -200,10 +180,6 @@ class Link {
         }
 
         this.elem = link;
-    }
-
-    setText(text) {
-        this.elem.textContent = text;
     }
 }
 
@@ -234,64 +210,73 @@ class Card {
 }
 
 class Switch {
-    constructor(text, parent, options = { type: 'switch', pos: 'right' }) {
-        const { type, pos, selector } = options;
+    constructor(text, parent, options = { type: 'switch', pos: 'right', selector: '.switch' }) {
+        const { type, pos, label, selector } = options;
 
-        const checkboxWrapper = document.createElement('label');
         const checkbox = document.createElement('input');
 
-        if (type === 'switch') checkbox.type = 'text';
+        if (type === 'switch') checkbox.type = 'checkbox';
         else if (type === 'box') checkbox.type = 'checkbox';
         else if (type === 'radio') checkbox.type = 'radio';
+        else checkbox.type = 'checkbox';
 
-        const checkboxText = document.createElement('span');
-        checkboxText.textContent = text || 'Checkbox';
+        if (label) {
+            const wrapper = document.createElement('label');
+            const span = document.createElement('span');
+            span.textContent = typeof label === 'string' ? label : text || '';
 
-        if (pos === 'left') { checkboxWrapper.appendChild(checkbox); checkboxWrapper.appendChild(checkboxText); }
-        else { checkboxWrapper.appendChild(checkboxText); checkboxWrapper.appendChild(checkbox); }
+            if (pos === 'left') {
+                wrapper.appendChild(checkbox);
+                wrapper.appendChild(span);
+            } else {
+                wrapper.appendChild(span);
+                wrapper.appendChild(checkbox);
+            }
 
+            if (selector) wrapper.classList.add(selector.replace('.', ''));
+            if (parent) parent.appendChild(wrapper);
 
-        if (parent) parent.appendChild(checkboxWrapper);
+            this.elem = wrapper;
+            this.checkbox = checkbox;
+        } else {
+            if (selector) checkbox.classList.add(selector.replace('.', ''));
+            if (parent) parent.appendChild(checkbox);
 
-        this.elem = checkboxWrapper;
-        this.checkbox = checkbox;
+            this.elem = checkbox;
+            this.checkbox = checkbox;
+        }
     }
 
     setChecked(checked) {
         this.checkbox.checked = checked;
     }
-
-    setText(text) {
-        this.elem.querySelector('span').textContent = text;
-    }
-
-    setStyle(stylesheet) {
-        this.elem.style = stylesheet;
-    }
-
-    onChange(callback) {
-        this.checkbox.addEventListener('change', callback);
-    }
 }
 
 class Input {
-    constructor(placeholder, parent, options = { type: 'text' }) {
-        const { type } = options;
-        const wrapper = document.createElement('label');
+    constructor(placeholder, parent, options = { type: 'text', label: false }) {
+        const { type, label } = options;
+        
         const input = document.createElement('input');
         input.type = type;
         input.placeholder = placeholder || '';
 
-        const span = document.createElement('span');
-        span.textContent = placeholder || '';
+        if (label) {
+            const wrapper = document.createElement('label');
 
-        wrapper.appendChild(span);
-        wrapper.appendChild(input);
+            const span = document.createElement('span');
+            span.textContent = typeof label === 'string' ? label : placeholder || '';
 
-        if (parent) parent.appendChild(wrapper);
+            wrapper.appendChild(span);
+            wrapper.appendChild(input);
 
-        this.elem = wrapper;
-        this.input = input;
+            if (parent) parent.appendChild(wrapper);
+
+            this.elem = wrapper;
+            this.input = input;
+        } else {
+            this.elem = input;
+            if (parent) parent.appendChild(input);
+        }
     }
 
     setValue(value) {
@@ -305,18 +290,6 @@ class Input {
     setPlaceholder(text) {
         this.input.placeholder = text;
         this.elem.querySelector('span').textContent = text;
-    }
-
-    setStyle(stylesheet) {
-        this.input.style = stylesheet;
-    }
-
-    onInput(callback) {
-        this.input.addEventListener('input', callback);
-    }
-
-    on(event, callback) {
-        this.input.addEventListener(event, callback);
     }
 }
 
@@ -398,5 +371,26 @@ class Wrapper {
                 this.elem.appendChild(i.elem);
             }
         });
+    }
+}
+
+
+for (const c of [Btn, Link, Switch, Input]) {
+    c.prototype.on = function(e, call) {
+        this.elem.addEventListener(e, call);
+    };
+    c.prototype.click = function() {
+        this.elem.click();
+    }
+    c.prototype.setText = function(text) {
+        this.elem.textContent = text;
+    }
+
+    c.prototype.setStyle = function(stylesheet) {
+        this.elem.style = stylesheet;
+    }
+
+    c.prototype.style = function() {
+        return this.elem.style;
     }
 }

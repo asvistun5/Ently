@@ -22,5 +22,5 @@ function main(app) {
     const { content } = app;
     const con = content;
 
-    con.btn.onClick(() => { con.btn.setColor('green'); con.btn.setText('Clicked'); });
+    con.btn.on('click', () => { con.btn.setColor('green'); con.btn.setText('Clicked'); con.chk.click(); });
 }
