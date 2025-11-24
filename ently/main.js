@@ -4,7 +4,7 @@ const body = doc.body;
 
 let nav, sidebar, wrapper;
 
-function buildApp({ name, icon = false, options = {}, navs = [], content, callback }) {
+function render({ name, icon = false, options = {}, navs = [], content, call }) {
     const { navOpt = true, sidebarOpt = false, wrapperOpt = true, loadFonts = true, materialDesign = true, mode = 'system' } = options;
 
     if (materialDesign) addMaterialDesign(materialDesign);
@@ -47,7 +47,7 @@ function buildApp({ name, icon = false, options = {}, navs = [], content, callba
 
     const app = { name, icon, nav, sidebar, wrapper, content };
 
-    if (callback) callback(app);
+    if (call) call(app);
 
     return app;
 }
@@ -55,17 +55,17 @@ function buildApp({ name, icon = false, options = {}, navs = [], content, callba
 function addMaterialDesign(path) {
     const defaultPath = 'ently/css/style.css';
     const finalPath = (typeof path === 'string') ? path : defaultPath;
-    addStylesheet(finalPath);
+    stylesheet(finalPath);
 }
 
-function addStylesheet(href = 'styles.css') {
+function stylesheet(href = 'styles.css') {
     const link = doc.createElement('link');
     link.rel = 'stylesheet';
     link.href = href;
     head.appendChild(link);
 }
 
-function element(tag, parent) {
+function elem(tag, parent) {
     const elem = doc.createElement(tag);
     if (parent) parent.appendChild(elem);
     return elem;
@@ -189,7 +189,7 @@ class Card {
         const selector = opts.selector || '.card';
         const btns = opts.btns || [];
         const card = doc.createElement('div');
-        if (image) element('img', card).src = image;
+        if (image) elem('img', card).src = image;
         if (typeof selector !== 'string') throw new Error(`${selector} Selector must be a string.`);
         card.classList.add(selector.replace('.', ''));
         if (parent) parent.appendChild(card);
@@ -306,8 +306,8 @@ class Navbar {
             let label, href;
 
             if (typeof value === 'object') {
-                label = value.label || key.charAt(0).toUpperCase() + key.slice(1); 
-                href = value.href || '#';
+                label = value.name || key.charAt(0).toUpperCase() + key.slice(1); 
+                href = value.url || '#';
             } else {
                 label = key;
                 href = value || '#';
