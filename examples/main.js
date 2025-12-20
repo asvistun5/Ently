@@ -1,4 +1,4 @@
-const rootApp = root();
+/*const rootApp = root();
 style('ently/css/style.css')
 
 const Base = page => {
@@ -58,4 +58,35 @@ const routerApp = router(
     "*": () => "<h1>404</h1>"
   },
   rootApp
+);*/
+
+const App = app(
+    "/static/img/icon.svg",
+    "Demo App",
+    {
+        "/": () => {
+            const [count, setCount] = useState(0);
+
+            window.inc = () => {
+                setCount(v => v + 1);
+            };
+
+            return `
+                <h1>Home</h1>
+                <p>${count}</p>
+                <button onclick="inc()">+</button>
+                <a href="/about">About</a>
+            `;
+        },
+
+        "/about": () => `
+            <h1>About</h1>
+            <a href="/">Home</a>
+        `,
+
+        "*": () => `<h1>404</h1>`
+    },
+    {
+        mount: "#app"
+    }
 );

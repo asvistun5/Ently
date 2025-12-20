@@ -1,14 +1,18 @@
-<img src="static/img/icon.svg">
+<div style="display: flex; align-items: center; gap: 12px; width: 100%; justify-content: center;">
+    <img src="static/img/icon.svg">
+    <h1>Ently</h1>
+</div>
 
-# Ently
+---
 
-Lightweight **JS library** for building simple web applications
-Ently (from "ant" – small but powerful) is a **mini JS library** designed to help you **quickly create web apps**
+Mini **JS library** for building powerful web applications
+
+Ently (from "ant" – small but powerful) is a **JS library** designed to help you **quickly create web apps**
 
 <details>
    <summary>Installation</summary>
    
-You have 2 ways to connect Ently into your app:
+There's 2 ways to connect Ently into your app:
 
 **Include it directly in your HTML via CDN:**
 
@@ -16,12 +20,41 @@ You have 2 ways to connect Ently into your app:
 <script src="https://cdn.jsdelivr.net/gh/asvistun5/Ently@main/ently/main.js"></script>
 ```
 
-**OR download [Ently's main.js](ently/main.js) file yourself**
+**OR download `ently/main.js` [file here](ently/main.js)**
+
+</details>
 
 </details>
 
 <details>
-   <summary>Basic</summary>
+   <summary>Quick Start</summary>
+
+### `app(icon, title, routes, opts?)`
+
+Initialize and start a single-page application.
+
+```js
+const App = app(
+    "/static/img/icon.svg",
+    "Demo App",
+    {
+        "/": () => {
+            return `
+                <h1>Home</h1>
+            `;
+        },
+        "*": () => `<h1>404</h1>`
+    },
+    {mount: "#app"}
+);
+```
+
+
+</details>
+
+
+<details>
+   <summary>Basics</summary>
 
 **$**
 
@@ -80,10 +113,24 @@ post("/api/save", { name: "John" })
 
 <details>
    <summary>Customization</summary>
-   working...
+
+### `router(routes, render)`
+
+Client-side router for single-page applications.
+
+```js
+const nav = router(routes, render)
+```
+
+useState
+
+useEffect
+
+renderApp
+
 </details>
 
-More info about functions and methods you can also [view in demo.js file.](demo.js)
+More info and examples you can view in `examples/` folder.
 
 ### License
 
