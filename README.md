@@ -17,10 +17,10 @@ There's 2 ways to connect Ently into your app:
 **Include it directly in your HTML via CDN:**
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/asvistun5/Ently@main/ently/main.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/asvistun5/Ently@main/ently/bundle.js"></script>
 ```
 
-**OR download `ently/main.js` [file here](ently/main.js)**
+**OR download `ently/bundle.js` [file here](ently/bundle.js)**
 
 </details>
 
@@ -56,12 +56,18 @@ const App = app(
 <details>
    <summary>Basics</summary>
 
-**$**
+**$ and $a**
 
 Select a DOM element using a CSS selector.
 
 ```js
 const getElem = $("#elem")
+```
+
+To get all elements with this selector
+
+```js
+const getElems = $a(".elems")
 ```
 
 **elem(tag, attrs)**
