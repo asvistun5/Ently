@@ -33,3 +33,34 @@ function app(icon, title, routes, opts = {}) {
     instance.start();
     return instance;
 }
+
+function setTranslation(transObj, useNavigator = true) {
+    let lang;
+
+    if (useNavigator) {
+        lang = navigator.language || navigator.userLanguage;
+    }
+
+    if (!lang) {
+        lang = document.documentElement.lang || "en";
+    }
+
+    lang = lang.toLowerCase().split("-")[0];
+
+    if (!transObj[lang]) {
+        lang = Object.keys(transObj)[0];
+    }
+
+    document.documentElement.lang = lang;
+
+    const translation = transObj[lang];
+
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (translation[key] !== undefined) {
+            el.textContent = translation[key];
+        }
+    });
+
+    return translation;
+}

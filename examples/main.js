@@ -1,3 +1,43 @@
+const App = app(
+    "/static/img/icon.svg",
+    "Demo App",
+    {
+        "/": () => {
+            const [count, setCount] = useState(0);
+            const nav = useNavigate();
+
+            window.inc = () => setCount(v => v + 1);
+            window.goAbout = () => nav("/about");
+
+            return `
+                <h1>Home</h1>
+                <p>${count}</p>
+                <button onclick="inc()">+</button>
+                <button onclick="goAbout()">Go to About</button>
+            `;
+        },
+
+        "/about": () => {
+            const nav = useNavigate();
+
+            window.goHome = () => nav("/", { replace: true });
+
+            return `
+                <h1>About</h1>
+                <button onclick="goHome()">Back Home</button>
+            `;
+        },
+
+        "*": () => `
+            <h1>404</h1>
+            <button onclick="location.href='/'">Home</button>
+        `
+    },
+    {
+        mount: "#app"
+    }
+);
+
 /*const rootApp = root();
 style('ently/css/style.css')
 
@@ -59,34 +99,3 @@ const routerApp = router(
   },
   rootApp
 );*/
-
-const App = app(
-    "/static/img/icon.svg",
-    "Demo App",
-    {
-        "/": () => {
-            const [count, setCount] = useState(0);
-
-            window.inc = () => {
-                setCount(v => v + 1);
-            };
-
-            return `
-                <h1>Home</h1>
-                <p>${count}</p>
-                <button onclick="inc()">+</button>
-                <a href="/about">About</a>
-            `;
-        },
-
-        "/about": () => `
-            <h1>About</h1>
-            <a href="/">Home</a>
-        `,
-
-        "*": () => `<h1>404</h1>`
-    },
-    {
-        mount: "#app"
-    }
-);

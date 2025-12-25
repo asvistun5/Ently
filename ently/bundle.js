@@ -1,10 +1,15 @@
 let state = [];
 let cursor = 0;
 let rerender = () => {};
+let navigate = () => {};
 
 
 function $(selector) {
     return document.querySelector(selector);
+}
+
+function $a(selector) {
+    return document.querySelectorAll(selector);
 }
 
 function elem(tag, attrs = {}) {
@@ -81,11 +86,16 @@ function router(routes, render) {
         render(view);
     }
 
-    function go(path) {
-        history.pushState({}, "", path);
+    function go(path, replace = false) {
+        if (replace) {
+            history.replaceState({}, "", path);
+        } else {
+            history.pushState({}, "", path);
+        }
         update();
     }
 
+    navigate = go;
     window.addEventListener("popstate", update);
 
     document.addEventListener("click", e => {
@@ -134,6 +144,12 @@ function useEffect(callback, deps) {
         state[idx] = deps;
     }
     cursor++;
+}
+
+function useNavigate() {
+    return (path, options = {}) => {
+        navigate(path, options.replace);
+    };
 }
 
 function renderApp(app) {
