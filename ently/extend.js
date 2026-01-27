@@ -10,6 +10,17 @@ function setIcon(src) {
     document.head.append(link);
 }
 
+function style(src) {
+    if (document.querySelector(`link[href="${src}"]`)) return;
+
+    const link = elem("link", {
+        rel: "stylesheet",
+        href: src
+    });
+
+    document.head.append(link);
+}
+
 
 function app(icon, title, routes, opts = {}) {
     if (icon) setIcon(icon);
@@ -63,4 +74,41 @@ function setTranslation(transObj, useNavigator = true) {
     });
 
     return translation;
+}
+
+function useState(initialValue) {
+    const idx = cursor;
+    if (state[idx] === undefined) state[idx] = initialValue;
+
+    const setState = value => {
+        state[idx] = typeof value === "function" ? value(state[idx]) : value;
+        if (typeof rerender === "function") {
+            cursor = 0;
+            rerender();
+        }
+    };
+
+    cursor++;
+    return [state[idx], setState];
+}
+
+function useEffect(callback, deps) {
+    const idx = cursor;
+    const hasNoDeps = !deps;
+    const oldDeps = state[idx];
+    let hasChanged = true;
+    if (oldDeps) {
+        hasChanged = deps.some((dep, i) => !Object.is(dep, oldDeps[i]));
+    }
+    if (hasNoDeps || hasChanged) {
+        callback();
+        state[idx] = deps;
+    }
+    cursor++;
+}
+
+function useNavigate() {
+    return (path, options = {}) => {
+        navigate(path, options.replace);
+    };
 }
