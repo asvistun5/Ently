@@ -1,133 +1,157 @@
-let state = [];
-let cursor = 0;
-let rerender = () => {};
-let navigate = () => {};
+const dom = document;
+let tmp;
 
 const page = {
-    title: document.title,
-    on: (path, fn) => {
-        if (window.location.pathname === '/' + path) fn();
+    path: window.location.pathname,
+    reload: () => window.location.reload(),
+    template: null,
+    popstate: () => {},
+    go: path => {
+        if (path !== page.path) {
+            history.pushState({ path }, '', path);
+            page.path = path;
+            if (page.popstate) page.popstate(path);
+        }
+    },
+};
 
-        window.addEventListener('popstate', () => {
-            if (window.location.pathname === '/' + path) fn();
-        });
+const $ = selector => document.querySelector(selector);
+const $$ = selector => document.querySelectorAll(selector);
 
-        return page;
+function template(target) {
+    page.template = target;
+}
+
+function render(html) {
+    const voidTags = [
+        'area',
+        'base',
+        'br',
+        'col',
+        'embed',
+        'hr',
+        'img',
+        'input',
+        'link',
+        'meta',
+        'param',
+        'source',
+        'track',
+        'wbr',
+    ];
+
+    return html
+        .replace(/<!--[\s\S]*?-->/g, '')
+
+        .replace(/<([A-Z][\w]*)\s*\/>/g, (m, name) => {
+            const comp = globalThis[name];
+
+            if (typeof comp === 'function') {
+                const res = comp();
+
+                if (typeof res === 'string') return res;
+                if (res?.str) return res.str();
+            }
+
+            return '';
+        })
+
+        .replace(/<([a-zA-Z][\w-]*)([^>]*)\/>/g, (m, tag, attrs) => {
+            tag = tag.toLowerCase();
+            if (voidTags.includes(tag)) {
+                return `<${tag}${attrs}>`;
+            }
+            return `<${tag}${attrs}></${tag}>`;
+        })
+
+        .replace(/\n+/g, '')
+        .replace(/>\s+</g, '><')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+}
+
+function elem(tag) {
+    let el, html;
+
+    if (tag.trim().startsWith('<')) {
+        html = render(tag);
+        const tp = document.createElement('template');
+        tp.innerHTML = html;
+        el = tp.content.firstElementChild;
+    } else {
+        el = document.createElement(tag);
+        html = `<${tag}></${tag}>`;
     }
-}
 
-function $(selector) {
-    return document.querySelector(selector);
-}
-
-function $$(selector) {
-    return document.querySelectorAll(selector);
-}
-
-function go(path) {
-    history.pushState({ path }, '', path);
-}
-
-window.addEventListener("popstate", e => {
-    const path = e.state?.path || window.location.pathname;
-    go(path);
-});
-
-function elem(tag, attrs = {}) {
-    const el = document.createElement(tag);
-
-    for (const [key, value] of Object.entries(attrs)) {
-        if (key === "style" && typeof value === "object") Object.assign(el.style, value);
-        else if (key.startsWith("on") && typeof value === "function") el.addEventListener(key.slice(2).toLowerCase(), value);
-        else if (key === "text") el.textContent = value;
-        else el.setAttribute(key, value);
-    }
+    el.str = () => html;
 
     return el;
 }
 
-function get(url, headers = {}) {
-    return fetch(url, {
-        method: "GET",
-        headers
-    }).then(res => {
-        if (!res.ok) throw new Error(res.status);
-        return res.json();
-    });
-}
+function setTranslation(transObj, useNavigator = true) {
+    let lang;
 
-function post(url, data, headers = {}) {
-    return fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            ...headers
-        },
-        body: JSON.stringify(data)
-    }).then(res => {
-        if (!res.ok) throw new Error(res.status);
-        return res.json();
-    });
-}
-
-function root(selector) {
-    const el =
-        !selector
-            ? document.body
-            : typeof selector === "string"
-                ? $(selector) || document.body
-                : selector || document.body;
-
-    let currentView = () => "";
-
-    function render(view) {
-        currentView = view;
-        el.innerHTML = view();
+    if (useNavigator) {
+        lang = navigator.language || navigator.userLanguage;
     }
 
-    render.currentView = () => currentView();
-
-    return render;
-}
-
-function router(render, routes) {
-    function update() {
-        const view = routes[location.pathname] || routes["*"];
-        render(view);
+    if (!lang) {
+        lang = document.documentElement.lang || 'en';
     }
 
-    function go(path, replace = false) {
-        if (replace) {
-            history.replaceState({}, "", path);
-        } else {
-            history.pushState({}, "", path);
+    lang = lang.toLowerCase().split('-')[0];
+
+    if (!transObj[lang]) {
+        lang = Object.keys(transObj)[0];
+    }
+
+    document.documentElement.lang = lang;
+
+    const dict = transObj[lang];
+
+    function translateNode(node) {
+        if (node.nodeType === 3) {
+            const text = node.nodeValue.trim();
+            if (dict[text] !== undefined) {
+                node.nodeValue = dict[text];
+            }
+            return;
         }
-        update();
+
+        if (node.nodeType === 1) {
+            if (dict[node.textContent?.trim()] !== undefined) {
+                node.textContent = dict[node.textContent.trim()];
+            }
+
+            node.childNodes.forEach(translateNode);
+        }
     }
 
-    navigate = go;
-    window.addEventListener("popstate", update);
+    translateNode(document.body);
 
-    document.addEventListener("click", e => {
-        const link = e.target.closest("a");
-        if (!link) return;
-        if (link.hasAttribute("data-ext")) return;
-
-        const href = link.getAttribute("href");
-        if (href && href.startsWith("/") && !href.startsWith("//")) {
-            e.preventDefault();
-            go(href);
-        }
+    new MutationObserver(m => {
+        m.forEach(r => {
+            r.addedNodes.forEach(translateNode);
+        });
+    }).observe(document.body, {
+        childList: true,
+        subtree: true,
     });
 
-    update();
-
-    return { go };
+    return dict;
 }
 
-function renderApp(app) {
-    cursor = 0;
-    rerender = () => renderApp(app);
-    const viewFunc = app.render.currentView();
-    app.render(typeof viewFunc === "function" ? viewFunc() : viewFunc);
-}
+const ently = {
+    translation: null,
+};
+
+if (ently.translation) setTranslation(ently.translation);
+
+page.popstate(page.path);
+
+window.addEventListener('popstate', e => {
+    const path = e.state?.path || window.location.pathname;
+    page.path = path;
+
+    page.popstate(path);
+});
