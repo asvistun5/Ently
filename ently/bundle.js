@@ -6,7 +6,8 @@ const page = {
     reload: () => window.location.reload(),
     template: null,
     popstate: () => {},
-    go: path => {
+
+    go(path) {
         if (path !== page.path) {
             history.pushState({ path }, '', path);
             page.path = path;
@@ -15,44 +16,48 @@ const page = {
     },
 };
 
-const $ = selector => document.querySelector(selector);
-const $$ = selector => document.querySelectorAll(selector);
+function $(context, selector) {
+    if (typeof context === 'string') {
+        return document.querySelector(context);
+    }
+
+    return context.querySelector(selector);
+}
+
+function $a(context, selector) {
+    if (typeof context === 'string') {
+        return document.querySelectorAll(context);
+    }
+
+    return context.querySelectorAll(selector);
+}
 
 function template(target) {
     page.template = target;
 }
 
 function render(html) {
-    const voidTags = [
-        'area',
-        'base',
-        'br',
-        'col',
-        'embed',
-        'hr',
-        'img',
-        'input',
-        'link',
-        'meta',
-        'param',
-        'source',
-        'track',
-        'wbr',
-    ];
+    const voidTags = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
 
     return html
         .replace(/<!--[\s\S]*?-->/g, '')
 
-        .replace(/<([A-Z][\w]*)\s*\/>/g, (m, name) => {
+        .replace(/<([A-Z][\w]*)([^>]*)\/>/g, (m, name, attrsStr) => {
             const comp = globalThis[name];
-
-            if (typeof comp === 'function') {
-                const res = comp();
-
-                if (typeof res === 'string') return res;
-                if (res?.str) return res.str();
-            }
-
+        
+            if (typeof comp !== 'function') return '';
+        
+            const props = {};
+        
+            attrsStr.replace(/(\w+)="([^"]*)"/g, (_, key, value) => {
+                props[key] = value;
+            });
+        
+            const res = comp(props);
+        
+            if (typeof res === 'string') return res;
+            if (res?.str) return res.str();
+        
             return '';
         })
 
@@ -70,7 +75,7 @@ function render(html) {
         .trim();
 }
 
-function elem(tag) {
+function elem(tag, attrs = {}) {
     let el, html;
 
     if (tag.trim().startsWith('<')) {
@@ -81,6 +86,17 @@ function elem(tag) {
     } else {
         el = document.createElement(tag);
         html = `<${tag}></${tag}>`;
+    }
+
+    if (attrs) {
+        for (const [key, value] of Object.entries(attrs)) {
+            if (key === "style" && typeof value === "object") Object.assign(el.style, value);
+            else if (key === "parent") value.appendChild(el);
+            else if (key === "text") el.textContent = value;
+            else if (key === "children" && Array.isArray(value)) value.forEach(child => child && el.append(child)); 
+            else if (key === "inner") el.innerHTML = render(value);
+            else el.setAttribute(key, value);
+        }
     }
 
     el.str = () => html;
