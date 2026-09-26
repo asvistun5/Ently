@@ -1,7 +1,7 @@
-const app = elem(`
+const content = elem(`
     <div id="app">
         <Nav />
-        <main>
+        <main root>
             <Header />
             <Products />
             <About />
@@ -10,5 +10,11 @@ const app = elem(`
     </div>
 `);
 
+const app = ently.app({
+    content,
+    router, 
+    title: "Ently",
+    icon: "static/img/icon.svg"
+});
 
-dom.body.appendChild(app);
+app.setTheme();

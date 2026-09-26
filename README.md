@@ -5,9 +5,9 @@
 
 ---
 
-Mini **JS library** for building powerful web applications
+Mini **JS library** for building native html web applications
 
-Ently (from "ant" – small but powerful) is a **JS library** designed to help you **quickly create web apps**
+Ently (from "ant" – small but powerful) is a **library** designed to help you **create web apps**
 
 <details>
    <summary>Installation</summary>
@@ -34,20 +34,37 @@ There's 2 ways to connect Ently into your app:
 Initialize and start a single-page application.
 
 ```js
-const App = app(
-    "/static/img/icon.svg",
-    "Demo App",
-    {
-        "/": () => {
-            return `
-                <h1>Home</h1>
-            `;
-        },
-        "*": () => `<h1>404</h1>`
-    },
-    {mount: "#app"}
-);
+const { app, router } = ently;
+
+
+const content = elem(`
+    <div class="app">
+        <nav>
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+        </nav>
+
+        <main root></main>
+
+        <footer>My app</footer>
+    </div>
+`);
+
+app({
+    content,
+
+    router({
+        "/": "<h1>Home</h1>",
+        "about": "<h1>About</h1>",
+        "*": path => `<h1>Page not found: ${path}</h1>`
+    }),
+
+    title: "My app",
+    icon: "/icon.svg"
+});
 ```
+
+The `root` attribute marks the route outlet. Ently removes the attribute after finding the element. Navigation links with same-origin URLs are handled by the router, and browser Back/Forward navigation is supported.
 
 
 </details>

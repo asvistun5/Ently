@@ -1,7 +1,7 @@
 const year = new Date().getFullYear();
 
 function Nav() {
-    return elem(`
+    const e = elem(`
         <nav>
             <div class="logo" />
             <a href="/">Home</a>
@@ -11,6 +11,8 @@ function Nav() {
             <button class="try-btn">Try for free</button>
         </nav>
     `)
+
+    return e;
 }
 
 function Header() {
@@ -54,4 +56,25 @@ function Footer() {
             </div>
         </footer>
     `)
+}
+
+function Counter() {
+    const [count, setCount] = state(0);
+    const e = elem(
+        `<section class="counter">
+            <p>Clicks: <span class="counter-value">0</span></p>
+            <button class="counter-add">Add one</button>
+        </section>
+    `);
+
+    const value = $(e, '.counter-value');
+    const btn = $(e, '.counter-add');
+
+    effect(() => {
+        if (value) value.textContent = count();
+    });
+
+    btn.on('click', () => setCount(current => current + 1));
+
+    return e;
 }
